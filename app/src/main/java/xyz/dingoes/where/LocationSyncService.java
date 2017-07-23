@@ -3,7 +3,9 @@ package xyz.dingoes.where;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
+import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -35,6 +37,7 @@ public class LocationSyncService extends Service {
     FusedLocationProviderClient mFusedLocationProviderClient;
     LocationCallback locationCallback;
     String BASE_URL = "";
+    CountDownTimer fcmCheckTimer;
 
     @Nullable
     @Override
@@ -49,6 +52,29 @@ public class LocationSyncService extends Service {
             BASE_URL = getString(R.string.BASE_URL);
             initializeLocationManager();
             startLocationUpdates();
+
+            if(!getSharedPreferences(getString(R.string.preferences_main), Context.MODE_PRIVATE).getBoolean("fcm_synced", false)) {
+                fcmCheckTimer = new CountDownTimer(10000, 1000) {
+                    @Override
+                    public void onTick(long millisUntilFinished) {
+                        String email = getSharedPreferences(getString(R.string.preferences_main), Context.MODE_PRIVATE).getString("email", "");
+                        String fcm = getSharedPreferences(getString(R.string.preferences_main), Context.MODE_PRIVATE).getString("fcm", "");
+                        if (!email.equalsIgnoreCase("") && !fcm.equalsIgnoreCase("")) {
+                            sendFCMToken(email, fcm);
+                        }
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        if(!getSharedPreferences(getString(R.string.preferences_main), Context.MODE_PRIVATE).getBoolean("fcm_synced", false)) {
+                            fcmCheckTimer.cancel();
+                            fcmCheckTimer.start();
+                        }
+                    }
+                };
+                fcmCheckTimer.start();
+            }
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -107,7 +133,6 @@ public class LocationSyncService extends Service {
                                 return params;
                             }
                         };
-// Add the request to the RequestQueue.
                         queue.add(stringRequest);
                     }
                 }
@@ -130,7 +155,7 @@ public class LocationSyncService extends Service {
             JSONObject locationDetails;
             locationDetails = new JSONObject();
             locationDetails.put("latitude", location.getLatitude());
-            locationDetails.put("longitude", location.getLatitude());
+            locationDetails.put("longitude", location.getLongitude());
             locationDetails.put("speed", location.getSpeed());
             locationDetails.put("time", location.getTime());
             locationDetails.put("bearing", location.getBearing());
@@ -139,5 +164,41 @@ public class LocationSyncService extends Service {
             ex.printStackTrace();
             return null;
         }
+    }
+
+
+    void sendFCMToken(final String email, final String fcmID) {
+        RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
+        String url = BASE_URL + "/v1/registerGcm";
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // Display the first 500 characters of the response string.
+                        Log.d("Location-sync", response);
+                        SharedPreferences sharedPref = getSharedPreferences(getString(R.string.preferences_main),
+                                Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPref.edit();
+                        editor.putBoolean("fcm_synced", true);
+                        editor.apply();
+                        fcmCheckTimer.cancel();
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("Location-sync", error.toString());
+            }
+
+        }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String,String> params = new HashMap<String, String>();
+                params.put("user_id", email);
+                params.put("gcm", fcmID);
+                return params;
+            }
+        };
+        queue.add(stringRequest);
     }
 }

@@ -5,6 +5,7 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Service;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -16,14 +17,17 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.EditText;
 
 import java.util.Objects;
 import java.util.regex.Pattern;
@@ -50,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
         initializeUiElements();
         requestLocationPermissionAndStartService();
         overlayPermissionCheck();
+        Log.d("email", getSharedPreferences(getString(R.string.preferences_main), Context.MODE_PRIVATE).getString("email", ""));
         if(Objects.equals(getSharedPreferences(getString(R.string.preferences_main), Context.MODE_PRIVATE).getString("email", ""), "")) {
             getAndSavePrimaryEmail();
         }
@@ -101,11 +106,37 @@ public class MainActivity extends AppCompatActivity {
     * */
 
     void initializeUiElements() {
-        Button getLocationButton = (Button) findViewById(R.id.get_location_button);
+        Button getLocationButton = (Button) findViewById(R.id.change_pin_button);
         getLocationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.Theme_AppCompat);
+                builder.setTitle("Change PIN");
 
+                final EditText input = new EditText(MainActivity.this);
+
+                input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_PASSWORD);
+                builder.setView(input);
+
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String pin = input.getText().toString();
+                        SharedPreferences sharedPref = getSharedPreferences(getString(R.string.preferences_main),
+                                Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPref.edit();
+                        editor.putString("pin", pin);
+                        editor.apply();
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+                builder.show();
             }
         });
     }

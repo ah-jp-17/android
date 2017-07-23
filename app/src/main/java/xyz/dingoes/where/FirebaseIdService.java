@@ -1,6 +1,7 @@
 package xyz.dingoes.where;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.android.volley.AuthFailureError;
@@ -58,34 +59,11 @@ public class FirebaseIdService extends FirebaseInstanceIdService {
      * @param token The new token.
      */
     private void sendRegistrationToServer(final String token) {
-        RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
-        String url = BASE_URL + "/v1/registerGcm";
 
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        // Display the first 500 characters of the response string.
-                        Log.d("Location-sync", response);
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("Location-sync", error.toString());
-            }
-
-        }){
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String,String> params = new HashMap<String, String>();
-                String email = getSharedPreferences(getString(R.string.preferences_main), Context.MODE_PRIVATE).getString("email", "");
-                params.put("user_id", email);
-                params.put("gcm", token);
-                return params;
-            }
-        };
-// Add the request to the RequestQueue.
-        queue.add(stringRequest);
+        SharedPreferences sharedPref = getSharedPreferences(getString(R.string.preferences_main),
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("fcm", token);
+        editor.apply();
     }
 }

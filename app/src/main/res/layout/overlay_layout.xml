@@ -15,6 +15,7 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:id="@+id/choice_layout"
+        android:visibility="visible"
         >
 
         <TextView
@@ -39,13 +40,13 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="I am okay"
+                android:text="I am Okay"
                 android:id="@+id/affirmative_button"
                 />
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="mujhe bachao"
+                android:text="Send history"
                 android:id="@+id/negative_button"
                 />
         </LinearLayout>
@@ -58,6 +59,10 @@
         android:gravity="center"
         android:id="@+id/pin_layout"
         android:visibility="gone"
+        android:paddingTop="32dp"
+        android:paddingBottom="32dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
         >
 
         <EditText
@@ -65,10 +70,12 @@
             android:layout_height="wrap_content"
             android:minWidth="100dp"
             android:inputType="numberPassword"
+            android:id="@+id/pin_edittext"
             />
         <Button
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
+            android:id="@+id/pin_deny_button"
             android:text="Deny"
             />
     </LinearLayout>
