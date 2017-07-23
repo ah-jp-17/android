@@ -29,6 +29,7 @@ public class NotificationReceiverService extends FirebaseMessagingService {
 
         if (remoteMessage.getData() != null && remoteMessage.getData().size() > 0) {
             Log.d(TAG, "Message data payload: " + remoteMessage.getData());
+            sendNotification(remoteMessage.getData().get("name") + " wants your location");
             Intent intent = new Intent(this, OverlayService.class);
             Bundle bundle = new Bundle();
             bundle.putString("name", remoteMessage.getData().get("name"));
@@ -57,15 +58,15 @@ public class NotificationReceiverService extends FirebaseMessagingService {
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.cast_ic_notification_0)
-                .setContentTitle("FCM Message")
+                .setContentTitle("Where")
                 .setContentText(messageBody)
                 .setAutoCancel(true)
-                .setSound(defaultSoundUri)
-                .setContentIntent(pendingIntent);
+                .setSound(defaultSoundUri);
+//                .setContentIntent(pendingIntent);
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        notificationManager.notify(0 , notificationBuilder.build());
     }
 }

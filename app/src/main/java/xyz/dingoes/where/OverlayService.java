@@ -1,5 +1,6 @@
 package xyz.dingoes.where;
 
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -97,6 +98,8 @@ public class OverlayService extends Service {
                 floatingView.findViewById(R.id.pin_layout).findViewById(R.id.pin_deny_button).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+                        notificationManager.cancel(0);
                         String pin = String.valueOf(((EditText)floatingView.findViewById(R.id.pin_layout).findViewById(R.id.pin_edittext))
                                 .getText());
                         String pin_pref = getSharedPreferences(getString(R.string.preferences_main), Context.MODE_PRIVATE).getString("pin", "");
@@ -113,6 +116,8 @@ public class OverlayService extends Service {
         ((Button)floatingView.findViewById(R.id.negative_button)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+                notificationManager.cancel(0);
                 permitAction("granted");
                 timer.cancel();
                 stopSelf();

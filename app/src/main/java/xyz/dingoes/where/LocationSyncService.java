@@ -95,8 +95,8 @@ public class LocationSyncService extends Service {
 
     void startLocationUpdates() {
         LocationRequest locationRequest = new LocationRequest();
-        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-        locationRequest.setInterval(5*1000*30);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(5*1000*15);
         locationRequest.setFastestInterval(10*1000);
 
         locationCallback = new LocationCallback(){
@@ -155,7 +155,7 @@ public class LocationSyncService extends Service {
             JSONObject locationDetails;
             locationDetails = new JSONObject();
             locationDetails.put("latitude", location.getLatitude());
-            locationDetails.put("longitude", location.getLongitude());
+            locationDetails.put("longitude", location.getLongitude()    );
             locationDetails.put("speed", location.getSpeed());
             locationDetails.put("time", location.getTime());
             locationDetails.put("bearing", location.getBearing());
