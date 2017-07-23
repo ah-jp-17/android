@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "527272049119",
+    "firebase_url": "https://where-174511.firebaseio.com",
+    "project_id": "where-174511",
+    "storage_bucket": "where-174511.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:527272049119:android:5d095823b54361b3",
+        "android_client_info": {
+          "package_name": "xyz.dingoes.where"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "527272049119-k8svdo0oogc9r9mqn8q6o4pltmlha8me.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAmBQ9ozs3BjZHFnkc-ItDoljf54WCCV4c"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
